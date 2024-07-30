@@ -75,6 +75,14 @@ The `drh-deidentification.sql` performs the deidentification of the columns in t
    ```
    Replace `<databasename>` with your actual database name.
 
+   
+   4.3 **Remove the de-identification sql after the de-identification**
+   
+   ```bash
+   rm De-Identification.sql
+   ```
+
+
 5. **Apply the Study Database Views to Preview in SQLPage**
 
    ```bash
