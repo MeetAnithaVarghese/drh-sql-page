@@ -10,7 +10,7 @@ INSERT INTO orchestration_nature (
     activity_log
 )
 VALUES (
-    'ORCNATDEID-001',
+    'ORCNATDEID-' || hex(randomblob(16)),
     'De-identification',
     NULL,  -- elaboration
     NULL,  -- created_by
@@ -24,17 +24,21 @@ VALUES (
 -- Retrieve the device ID
 WITH device_info AS (
     SELECT device_id FROM device LIMIT 1
+),
+orch_nature_info AS (
+    SELECT orchestration_nature_id FROM orchestration_nature WHERE nature = 'De-identification' LIMIT 1
 )
 INSERT INTO orchestration_session (orchestration_session_id, device_id, orchestration_nature_id, version, args_json, diagnostics_json, diagnostics_md)
 SELECT
     'ORCSESSIONDEID-' || hex(randomblob(16)) AS orchestration_session_id,
-    device_id,
-    'ORCNATDEID-001',
+    d.device_id,
+    o.orchestration_nature_id,
     '1.0',
     '{"parameters": "de-identification"}',
     '{"status": "started"}',
     'Started de-identification process'
-FROM device_info;
+FROM device_info d, orch_nature_info o;
+
 
 -- Retrieve the new session ID
 WITH session_info AS (
@@ -62,18 +66,18 @@ SELECT
     'ORCHSESSEXECDEID-' || hex(randomblob(16)),
     'De-identification',
     (SELECT orchestration_session_id FROM orchestration_session LIMIT 1),
-    'UPDATE uniform_resource_investigator executed',
+    'anonymize uniform_resource_investigator executed',
     CASE 
         WHEN (SELECT changes() = 0) THEN 1 
         ELSE 0 
     END,
-    'Data from uniform_resource_investigator',
-    'De-identification update',
+    'email from uniform_resource_investigator',
+    'De-identification completed',
     CASE 
         WHEN (SELECT changes() = 0) THEN 'No rows updated' 
         ELSE NULL 
     END,
-    'Checked update status'
+    'username in email is masked'
 ;
 
 UPDATE uniform_resource_author
@@ -85,18 +89,18 @@ SELECT
     'ORCHSESSEXECDEID-' || hex(randomblob(16)),
     'De-identification',
     (SELECT orchestration_session_id FROM orchestration_session LIMIT 1),
-    'UPDATE uniform_resource_author executed',
+    'anonymize uniform_resource_author executed',
     CASE 
         WHEN (SELECT changes() = 0) THEN 1 
         ELSE 0 
     END,
-    'Data from uniform_resource_author',
-    'De-identification update',
+    'email from uniform_resource_author',
+    'De-identification completed',
     CASE 
         WHEN (SELECT changes() = 0) THEN 'No rows updated' 
         ELSE NULL 
     END,
-    'Checked update status'
+    'username in email is masked'
 ;
 
 UPDATE uniform_resource_participant
@@ -108,18 +112,18 @@ SELECT
     'ORCHSESSEXECDEID-' || hex(randomblob(16)),
     'De-identification',
     (SELECT orchestration_session_id FROM orchestration_session LIMIT 1),
-    'UPDATE uniform_resource_participant executed',
+    'Anonymize uniform_resource_participant executed',
     CASE 
         WHEN (SELECT changes() = 0) THEN 1 
         ELSE 0 
     END,
-    'Data from uniform_resource_participant',
-    'De-identification update',
+    'AGE in uniform_resource_participant',
+    'De-identification completed',
     CASE 
         WHEN (SELECT changes() = 0) THEN 'No rows updated' 
         ELSE NULL 
     END,
-    'Checked update status'
+    'Age converted to age range'
 ;
 
 -- Commit the transaction

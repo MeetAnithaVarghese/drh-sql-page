@@ -15,6 +15,7 @@
 
    - Follow the installation instructions at [Surveilr Installation Guide](https://docs.opsfolio.com/surveilr/how-to/installation-guide).
    - Move the downloaded software to the study files folder.
+   - Example: DRH_STU
 
 3. **Data conversion steps**
 
@@ -59,7 +60,7 @@
    - If De-identification is to be performed ,please refer the steps below.
    - The Sql script will require changes from time to time.
 
-
+    
    **Steps for De-identification:**
 
 
