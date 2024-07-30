@@ -1,3 +1,12 @@
+--TODO: Ask Bassit to create a unique value generator for ids 
+--TODO: Ask Basit to add any error generated through orchestration into orch session issue table
+--ulid not working
+--ON CONFLICT IGNORE not supported in sqlite
+
+
+--INSERT INTO orchestration_nature ( orchestration_nature_id, nature)
+--VALUES ( 'drh-deidentify','De-identification') ON CONFLICT IGNORE;
+
 
 INSERT OR IGNORE INTO orchestration_nature (orchestration_nature_id, nature)
 VALUES ('drh-deidentify', 'De-identification');
@@ -12,7 +21,7 @@ orch_nature_info AS (
 )
 INSERT INTO orchestration_session (orchestration_session_id, device_id, orchestration_nature_id, version, args_json, diagnostics_json, diagnostics_md)
 SELECT
-    ulid() AS orchestration_session_id,
+    'ORCSESSIONDEID-' || hex(randomblob(16)) AS orchestration_session_id,
     d.device_id,
     o.orchestration_nature_id,
     '1.0',
