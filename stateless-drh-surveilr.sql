@@ -34,12 +34,12 @@ SELECT
 FROM uniform_resource_study;
 
 
-DROP View IF EXISTS uniform_resource_study_sub_data ;
-Create View  uniform_resource_study_sub_data As 
+DROP View IF EXISTS uniform_resource_study_cached_data ;
+Create View  uniform_resource_study_cached_data As 
 SELECT study_id, study_name, 'start_date', end_date, treatment_modalities, funding_source, nct_number, study_description FROM uniform_resource_study limit 10;
 
-DROP View IF EXISTS uniform_resource_cgm_file_data ;
-Create View  uniform_resource_cgm_file_data As 
+DROP View IF EXISTS uniform_resource_cgm_file_cached_data ;
+Create View  uniform_resource_cgm_file_cached_data As 
 SELECT metadata_id, devicename, device_id, source_platform, patient_id, file_name, 'file_format', file_upload_date, data_start_date, data_end_date, study_id FROM uniform_resource_cgm_file_metadata limit 10;
 
 

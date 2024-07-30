@@ -18,69 +18,67 @@
 
 3. **Data conversion steps**
 
-**3.1 Provide a valid name for the target database and initialize it.**
+   3.1 **Provide a valid name for the target database and initialize it.**
 
-**Note:**
-- Expected naming format: `DRH.<studyname>.sqlite.db`
-- Study name must be in small letters with no space in between
+   **Note:**
+   - Expected naming format: `DRH.<studyname>.sqlite.db`
+   - Study name must be in small letters with no space in between
 
-**Command:**
-- Command: `surveilr admin init -d <databasename>`
-- Example: `surveilr admin init -d DRH.glucostudy1.sqlite.db`
+   **Command:**
+   - Command: `surveilr admin init -d <databasename>`
+   - Example: `surveilr admin init -d DRH.glucostudy1.sqlite.db`
 
-In the above example, the database name is `DRH.glucostudy1.sqlite.db`.
-
-
-**3.2 Ingest the files**
-
-**Command:**
-- Command: `surveilr ingest files -d <databasename>`
-- Example: `surveilr ingest files -d DRH.glucostudy1.sqlite.db`
+   In the above example, the database name is `DRH.glucostudy1.sqlite.db`.
 
 
+   3.2 **Ingest the files**
 
-**3.3 Transform the files**
-
-**Command:**
-- Command: `surveilr transform -d <databasename> csv`
-- Example: `surveilr transform -d DRH.glucostudy1.sqlite.db csv`
-
-
-**3.4 Verify the transformed data**
-
-- Type the command `ls` to list the files.
-
-- You can also check the folder directly to see the transformed database.
+   **Command:**
+   - Command: `surveilr ingest files -d <databasename>`
+   - Example: `surveilr ingest files -d DRH.glucostudy1.sqlite.db`
 
 
-4. De-Identification
 
-**Note:** 
-- The De-identification is an optional step and DRH doesnt have any PHI columns in any CSV in the current situation.
-- If De-identification is to be performed ,please refer the steps below.
-- The Sql script will require changes from time to time.
+3.3 **Transform the files**
 
+    **Command:**
+    - Command: `surveilr transform -d <databasename> csv`
+    - Example: `surveilr transform -d DRH.glucostudy1.sqlite.db csv`
 
-**Steps for De-identification:**
+3.4 **Verify the transformed data**
 
+    - Type the command `ls` to list the files.
 
-**Command:**
-- Command: `surveilr anonymize --sql <sqlfilename> -d <databasename>`
-- Example: `surveilr anonymize --sql De-Identification.sql -d DRH.glucostudy1.sqlite.db`
+    - You can also check the folder directly to see the transformed database.
 
 
-</div>
+4. **De-Identification**
+
+   **Note:** 
+   - The De-identification is an optional step and DRH doesnt have any PHI columns in any CSV in the current situation.
+   - If De-identification is to be performed ,please refer the steps below.
+   - The Sql script will require changes from time to time.
+
+
+   **Steps for De-identification:**
+
+
+   **Command:**
+   - Command: `surveilr anonymize --sql <sqlfilename> -d <databasename>`
+   - Example: `surveilr anonymize --sql De-Identification.sql -d DRH.glucostudy1.sqlite.db`
+
+
 
 5. **Apply the study database views  to preview the SQLPAGE**
 
    ```bash
-   curl -L https://raw.githubusercontent.com/opsfolio/resource-surveillance-commons/main/pattern/drh/stateless-drh-surveilr.sql | sqlite3 resource-surveillance.sqlite.db   
+   curl -L https://raw.githubusercontent.com/MeetAnithaVarghese/drh-sql-page/stateless-drh-surveilr.sql | sqlite3 resource-surveillance.sqlite.db   
    ```
 
 6. **Preview content with SQLPage (requires `deno` v1.40 or above):**
 
    ```bash
-   deno run https://raw.githubusercontent.com/opsfolio/resource-surveillance-commons/main/pattern/drh/ux.sql.ts | sqlite3 resource-surveillance.sqlite.db
+   deno run https://raw.githubusercontent.com/MeetAnithaVarghese/drh-sql-page/ux.sql.ts | sqlite3 resource-surveillance.sqlite.db
    surveilr sqlpage --port 9000
    ```
 
