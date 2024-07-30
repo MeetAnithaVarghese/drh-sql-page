@@ -71,13 +71,13 @@ The `drh-deidentification.sql` performs the deidentification of the columns in t
    4.2 **Execute the De-identification Process**
 
    ```bash
-   surveilr anonymize --sql De-Identification.sql -d <databasename>
+   surveilr anonymize --sql De-Identification.sql 
    ```
-   Replace `<databasename>` with your actual database name.
+   
 
    
    4.3 **Remove the de-identification sql after the de-identification**
-   
+
    ```bash
    rm De-Identification.sql
    ```
