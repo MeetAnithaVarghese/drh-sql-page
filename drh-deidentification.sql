@@ -47,75 +47,124 @@ FROM session_info;
 -- Begin a transaction
 BEGIN;
 
--- Attempt to de-identify data
+-- Perform De-identification
 UPDATE uniform_resource_investigator
 SET email = anonymize_email(email);
-
--- Check for errors and log them
-INSERT INTO orchestration_session_exec (orchestration_session_exec_id, exec_nature, session_id, exec_code, exec_status, input_text, output_text, exec_error_text, narrative_md)
-SELECT
-    'ORCHSESSEXECDEID-' || hex(randomblob(16)),
-    'De-identification',
-    (SELECT orchestration_session_id FROM orchestration_session LIMIT 1),
-    'anonymize uniform_resource_investigator executed',
-    CASE 
-        WHEN (SELECT changes() = 0) THEN 1 
-        ELSE 0 
-    END,
-    'email from uniform_resource_investigator',
-    'De-identification completed',
-    CASE 
-        WHEN (SELECT changes() = 0) THEN 'No rows updated' 
-        ELSE NULL 
-    END,
-    'username in email is masked'
-;
 
 UPDATE uniform_resource_author
 SET email = anonymize_email(email);
 
--- Check for errors and log them
-INSERT INTO orchestration_session_exec (orchestration_session_exec_id, exec_nature, session_id, exec_code, exec_status, input_text, output_text, exec_error_text, narrative_md)
+UPDATE uniform_resource_participant
+SET age = generalize_age(CAST(age AS INTEGER));
+
+
+-- Create a temporary table
+CREATE TEMP TABLE temp_session_info AS
+SELECT
+    orchestration_session_id,
+    (SELECT orchestration_session_entry_id FROM orchestration_session_entry WHERE session_id = orchestration_session_id LIMIT 1) AS orchestration_session_entry_id
+FROM orchestration_session
+LIMIT 1;
+
+-- Insert into orchestration_session_exec for uniform_resource_investigator
+INSERT INTO orchestration_session_exec (
+    orchestration_session_exec_id,
+    exec_nature,
+    session_id,
+    session_entry_id,
+    exec_code,
+    exec_status,
+    input_text,
+    output_text,
+    exec_error_text,
+    narrative_md
+)
 SELECT
     'ORCHSESSEXECDEID-' || hex(randomblob(16)),
     'De-identification',
-    (SELECT orchestration_session_id FROM orchestration_session LIMIT 1),
-    'anonymize uniform_resource_author executed',
-    CASE 
-        WHEN (SELECT changes() = 0) THEN 1 
-        ELSE 0 
-    END,
-    'email from uniform_resource_author',
+    s.orchestration_session_id,
+    s.orchestration_session_entry_id,
+    'UPDATE uniform_resource_investigator SET email = anonymize_email(email) executed',
+    1,
+    'email column in uniform_resource_investigator',
     'De-identification completed',
     CASE 
         WHEN (SELECT changes() = 0) THEN 'No rows updated' 
         ELSE NULL 
     END,
     'username in email is masked'
-;
+FROM temp_session_info s;
 
-UPDATE uniform_resource_participant
-SET age = generalize_age(CAST(age AS INTEGER));
-
--- Check for errors and log them
-INSERT INTO orchestration_session_exec (orchestration_session_exec_id, exec_nature, session_id, exec_code, exec_status, input_text, output_text, exec_error_text, narrative_md)
+-- Insert into orchestration_session_exec for uniform_resource_author
+INSERT INTO orchestration_session_exec (
+    orchestration_session_exec_id,
+    exec_nature,
+    session_id,
+    session_entry_id,
+    exec_code,
+    exec_status,
+    input_text,
+    output_text,
+    exec_error_text,
+    narrative_md
+)
 SELECT
     'ORCHSESSEXECDEID-' || hex(randomblob(16)),
     'De-identification',
-    (SELECT orchestration_session_id FROM orchestration_session LIMIT 1),
-    'Anonymize uniform_resource_participant executed',
+    s.orchestration_session_id,
+    s.orchestration_session_entry_id,
+    'UPDATE uniform_resource_author SET email = anonymize_email(email) executed',
+    1,
+    'email column in uniform_resource_author',
+    'De-identification completed',
     CASE 
-        WHEN (SELECT changes() = 0) THEN 1 
-        ELSE 0 
+        WHEN (SELECT changes() = 0) THEN 'No rows updated' 
+        ELSE NULL 
     END,
+    'username in email is masked'
+FROM temp_session_info s;
+
+-- Insert into orchestration_session_exec for uniform_resource_participant
+INSERT INTO orchestration_session_exec (
+    orchestration_session_exec_id,
+    exec_nature,
+    session_id,
+    session_entry_id,
+    exec_code,
+    exec_status,
+    input_text,
+    output_text,
+    exec_error_text,
+    narrative_md
+)
+SELECT
+    'ORCHSESSEXECDEID-' || hex(randomblob(16)),
+    'De-identification',
+    s.orchestration_session_id,
+    s.orchestration_session_entry_id,
+    'UPDATE uniform_resource_participant SET age = generalize_age(CAST(age AS INTEGER)) executed',
+    1,
     'AGE in uniform_resource_participant',
     'De-identification completed',
     CASE 
         WHEN (SELECT changes() = 0) THEN 'No rows updated' 
         ELSE NULL 
     END,
-    'Age converted to age range'
-;
+    'Age converted to Age Group'
+FROM temp_session_info s;
+
+-- Update orchestration_session to set finished timestamp and diagnostics
+UPDATE orchestration_session
+SET 
+    orch_finished_at = CURRENT_TIMESTAMP,
+    diagnostics_json = '{"status": "completed"}',
+    diagnostics_md = 'De-identification process completed'
+WHERE orchestration_session_id = (SELECT orchestration_session_id FROM temp_session_info LIMIT 1);
+
+-- Drop the temporary table when done
+DROP TABLE temp_session_info;
+
+
 
 -- Commit the transaction
 COMMIT;

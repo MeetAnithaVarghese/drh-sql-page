@@ -1,3 +1,5 @@
+--Code needs to be modified for orchestrate table entries
+
 -- Create a temporary table to define the expected schema
 CREATE TEMP TABLE expected_schema (
     table_name TEXT,
@@ -91,27 +93,41 @@ INSERT INTO expected_schema (table_name, column_name, column_type, is_primary_ke
 
 -- Validate the schema: Check for missing and additional columns in tables starting with "uniform_resource_"
 
-INSERT INTO orchestration_nature (orchestration_nature_id, nature, activity_log) VALUES (
-    'orc-nature-id-001', 'Verification&Validation', 'Verification&Validation process started'
-);
 
 WITH device_info AS (
     SELECT device_id FROM device LIMIT 1
+),
+orch_nature_info AS (
+    SELECT orchestration_nature_id FROM orchestration_nature WHERE nature = 'Verification and Validation' LIMIT 1
 )
 INSERT INTO orchestration_session (orchestration_session_id, device_id, orchestration_nature_id, version, args_json, diagnostics_json, diagnostics_md) 
 SELECT
     'orc-session-id-' || hex(randomblob(16)) AS orchestration_session_id,
-    device_id,
-    'orc-nature-id-001',
+    d.device_id,
+    o.orchestration_nature_id,
     '1.0',
     '{"parameters": "Verification&Validation"}',
     '{"status": "started"}',
     'Started Verification Validation process'
-FROM device_info;
+FROM device_info d, orch_nature_info o;
+
+
+-- Retrieve the new session ID
+WITH session_info AS (
+    SELECT orchestration_session_id FROM orchestration_session LIMIT 1
+)
+INSERT INTO orchestration_session_entry (orchestration_session_entry_id, session_id, ingest_src, ingest_table_name, elaboration)
+SELECT
+    'ORCSESENDEID-' || hex(randomblob(16)) AS orchestration_session_entry_id,
+    orchestration_session_id,
+    'Verification&Validation',
+    NULL,
+    '{"description": "Verifcation Validation In process"}'
+FROM session_info;
 
 
 -- Schema Validation: Check for missing columns
-.output validation_verification.txt
+--.output validation_verification.txt
 WITH SchemaValidationMissingColumns AS (
     SELECT 
         'Schema Validation: Missing Columns' AS heading,
@@ -619,12 +635,7 @@ SELECT * FROM DataIntegrityInvalidAge;
 
 -- Add any other data validation queries here as needed
 --------------------------------------------------------------------------------------------------------------------------
--- Create a new orchestration session
-INSERT INTO orchestration_session (
-    orchestration_session_id, device_id, orchestration_nature_id, version, orch_started_at
-) VALUES (
-    'new_session_id', 'device_id', 'orchestration_nature_id', 'version', CURRENT_TIMESTAMP
-);
+
 
 -- Insert missing columns issues
 INSERT INTO orchestration_session_issue (
