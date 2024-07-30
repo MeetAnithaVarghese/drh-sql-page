@@ -1,25 +1,14 @@
-INSERT INTO orchestration_nature (
-    orchestration_nature_id, 
-    nature, 
-    elaboration, 
-    created_by, 
-    updated_at, 
-    updated_by, 
-    deleted_at, 
-    deleted_by, 
-    activity_log
-)
-VALUES (
-    'ORCNATDEID-' || hex(randomblob(16)),
-    'De-identification',
-    NULL,  -- elaboration
-    NULL,  -- created_by
-    NULL,  -- updated_at
-    NULL,  -- updated_by
-    NULL,  -- deleted_at
-    NULL,  -- deleted_by
-    NULL
-);
+--TODO: Ask Bassit to create a unique value generator for ids 
+--TODO: Ask Basit to add any error generated through orchestration into orch session issue table
+
+
+--INSERT INTO orchestration_nature ( orchestration_nature_id, nature)
+--VALUES ( 'drh-deidentify','De-identification') ON CONFLICT IGNORE;
+
+
+INSERT OR IGNORE INTO orchestration_nature (orchestration_nature_id, nature)
+VALUES ('drh-deidentify', 'De-identification');
+
 
 -- Retrieve the device ID
 WITH device_info AS (
@@ -30,7 +19,7 @@ orch_nature_info AS (
 )
 INSERT INTO orchestration_session (orchestration_session_id, device_id, orchestration_nature_id, version, args_json, diagnostics_json, diagnostics_md)
 SELECT
-    'ORCSESSIONDEID-' || hex(randomblob(16)) AS orchestration_session_id,
+    ulid() AS orchestration_session_id,
     d.device_id,
     o.orchestration_nature_id,
     '1.0',
@@ -46,7 +35,7 @@ WITH session_info AS (
 )
 INSERT INTO orchestration_session_entry (orchestration_session_entry_id, session_id, ingest_src, ingest_table_name, elaboration)
 SELECT
-    'ORCSESENDEID-' || hex(randomblob(16)) AS orchestration_session_entry_id,
+    ulid() AS orchestration_session_entry_id,
     orchestration_session_id,
     'de-identification',
     NULL,
@@ -63,7 +52,7 @@ SET email = anonymize_email(email);
 -- Check for errors and log them
 INSERT INTO orchestration_session_exec (orchestration_session_exec_id, exec_nature, session_id, exec_code, exec_status, input_text, output_text, exec_error_text, narrative_md)
 SELECT
-    'ORCHSESSEXECDEID-' || hex(randomblob(16)),
+    ulid(),
     'De-identification',
     (SELECT orchestration_session_id FROM orchestration_session LIMIT 1),
     'anonymize uniform_resource_investigator executed',
@@ -86,7 +75,7 @@ SET email = anonymize_email(email);
 -- Check for errors and log them
 INSERT INTO orchestration_session_exec (orchestration_session_exec_id, exec_nature, session_id, exec_code, exec_status, input_text, output_text, exec_error_text, narrative_md)
 SELECT
-    'ORCHSESSEXECDEID-' || hex(randomblob(16)),
+    ulid(),
     'De-identification',
     (SELECT orchestration_session_id FROM orchestration_session LIMIT 1),
     'anonymize uniform_resource_author executed',
@@ -109,7 +98,7 @@ SET age = generalize_age(CAST(age AS INTEGER));
 -- Check for errors and log them
 INSERT INTO orchestration_session_exec (orchestration_session_exec_id, exec_nature, session_id, exec_code, exec_status, input_text, output_text, exec_error_text, narrative_md)
 SELECT
-    'ORCHSESSEXECDEID-' || hex(randomblob(16)),
+    ulid(),
     'De-identification',
     (SELECT orchestration_session_id FROM orchestration_session LIMIT 1),
     'Anonymize uniform_resource_participant executed',
