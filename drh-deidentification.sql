@@ -1,11 +1,14 @@
 --TODO: Ask Bassit to create a unique value generator for ids 
 --TODO: Ask Basit to add any error generated through orchestration into orch session issue
-
 --change to ulid once that is solved in surveilr
 
 
-INSERT INTO orchestration_nature ( orchestration_nature_id, nature)
-VALUES ( 'drh-deidentify','De-identification') ON CONFLICT IGNORE;
+--INSERT INTO orchestration_nature ( orchestration_nature_id, nature)
+--VALUES ( 'drh-deidentify','De-identification') ON CONFLICT IGNORE;
+
+INSERT OR IGNORE INTO orchestration_nature (orchestration_nature_id, nature)
+VALUES ('drh-deidentify', 'De-identification');
+
 
 -- Retrieve the device ID
 WITH device_info AS (
