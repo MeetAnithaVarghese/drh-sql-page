@@ -1,9 +1,24 @@
--- Create a new orchestration session
-INSERT INTO orchestration_nature (orchestration_nature_id, nature, activity_log)
+INSERT INTO orchestration_nature (
+    orchestration_nature_id, 
+    nature, 
+    elaboration, 
+    created_by, 
+    updated_at, 
+    updated_by, 
+    deleted_at, 
+    deleted_by, 
+    activity_log
+)
 VALUES (
     'ORCNATDEID-001',
     'De-identification',
-    'De-identification process started'
+    NULL,  -- elaboration
+    NULL,  -- created_by
+    NULL,  -- updated_at
+    NULL,  -- updated_by
+    NULL,  -- deleted_at
+    NULL,  -- deleted_by
+    NULL
 );
 
 -- Retrieve the device ID
