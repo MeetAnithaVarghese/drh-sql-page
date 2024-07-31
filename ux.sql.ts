@@ -82,13 +82,13 @@ class SqlPages<EmitContext extends SQLa.SqlEmitContext> {
       'Study Table' as contents_md;  
         SELECT 'table' as component, 1 as search, 1 as sort, 1 as hover, 1 as striped_rows;
         select *        
-        from uniform_resource_study_cached_data ; 
+        from study_data ; 
         select 
       'text' as component,
       'CGM File Meta Data table' as contents_md;  
         SELECT 'table' as component, 1 as search, 1 as sort, 1 as hover, 1 as striped_rows;
         select *        
-        from uniform_resource_cgm_file_cached_data ; 
+        from cgmfilemetadata_view ; 
         `;
     }
 }
