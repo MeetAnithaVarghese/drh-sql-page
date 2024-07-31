@@ -61,7 +61,7 @@ The `drh-deidentification.sql` performs the deidentification of the columns in t
    4.1 **Download the SQL File**
 
    ```bash
-   curl -L -o De-Identification.sql https://raw.githubusercontent.com/MeetAnithaVarghese/drh-sql-page/main/drh-deidentification.sql
+   curl -L -o De-Identification.sql https://raw.githubusercontent.com/MeetAnithaVarghese/drh-sql-page/main/de-identification/drh-deidentification.sql
    ```
 
    4.2 **Execute the De-identification Process**
