@@ -13,7 +13,6 @@ Create View  converted_files_list As
 select file_basename from ur_ingest_session_fs_path_entry where file_extn !='sql' and file_extn !='db';
 
 
-
 DROP View IF EXISTS converted_table_list ;
 Create View  converted_table_list As
 SELECT tbl_name As 'table_name'

@@ -2,7 +2,7 @@
 
 ## Overview
 
-The `drh-deidentification.sql` performs the deidentification of the columns in the study data converted tables. The `drh-sqlpage-views.sql` creates the database views which shall be used in SQLPage preview. The `orchestrate-drh-vv.sql` performs the verification and validation on the study data tables.
+The `drh-deidentification.sql` performs the deidentification of the columns in the study data converted tables. The `stateless-drh-surveilr.sql` creates the database views which shall be used in SQLPage preview. The `orchestrate-drh-vv.sql` performs the verification and validation on the study data tables.(TODO)
 
 ## Getting Started
 
