@@ -89,8 +89,10 @@ The `drh-deidentification.sql` performs the deidentification of the columns in t
 
    ```bash
    deno run https://raw.githubusercontent.com/MeetAnithaVarghese/drh-sql-page/main/ux.sql.ts | sqlite3 resource-surveillance.sqlite.db
-   surveilr sqlpage --port 9000   
+     
    ```
-
+   ```bash
+   surveilr sqlpage --port 9000 
+   ```
    Then, open a browser and navigate to [http://localhost:9000/drh/index.sql](http://localhost:9000/drh/index.sql).
 
